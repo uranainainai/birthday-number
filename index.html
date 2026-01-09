@@ -2,10 +2,120 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>誕生日を入力すると今月の数字メッセージが出る占い</title>
+  <title>誕生日を入力すると今月の数字メッセージが出る占い 悠久の星読み師
+</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="誕生日を入力すると、今月の数字とメッセージが表示されます。今日の数字メッセージも無料で確認できます。">
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:#f7f7fb;color:#222;margin:0}
+    header{padding:18px 14px;text-align:center;background:#fff;position:sticky;top:0;border-bottom:1px solid #eee}
+    h1{font-size:18px;margin:0 0 8px}
+    .tabs{display:flex;gap:8px;justify-content:center}
+    .tabs button{flex:1;max-width:220px;padding:10px;border-radius:10px;border:1px solid #ddd;background:#fafafa}
+    .tabs button.active{background:#222;color:#fff;border-color:#222}
+    main{max-width:680px;margin:0 auto;padding:16px}
+    .card{background:#fff;border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 8px 20px rgba(0,0,0,.05)}
+    label{font-size:13px;color:#666}
+    input,button{font-size:16px}
+    input[type="date"]{width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin-top:6px}
+    .cta{margin-top:12px;padding:12px 14px;border-radius:12px;border:none;background:#6b5cff;color:#fff}
+    .result{margin-top:14px;font-size:16px;line-height:1.6}
+    .note{font-size:13px;color:#666;margin-top:10px}
+    footer{font-size:12px;color:#777;text-align:center;padding:20px}
+  </style>
 </head>
 <body>
+
+<header>
   <h1>誕生日を入力すると今月の数字メッセージが出る占い</h1>
-  <p>表示テスト</p>
+  <div class="tabs">
+    <button id="tab-month" class="active" onclick="showTab('month')">今月の数字占い</button>
+    <button id="tab-today" onclick="showTab('today')">今日の数字メッセージ</button>
+  </div>
+</header>
+
+<main>
+  <!-- 今月の数字占い -->
+  <section id="month" class="card">
+    <label>誕生日を入力してください</label>
+    <input type="date" id="birthday">
+    <button class="cta" onclick="calcMonth()">診断する</button>
+    <div id="month-result" class="result"></div>
+    <div class="note">※詳しい意味はコメント欄で確認してください</div>
+  </section>
+
+  <!-- 今日の数字メッセージ -->
+  <section id="today" class="card" style="display:none">
+    <p>ボタンを押すと、今日の数字とメッセージが表示されます。</p>
+    <button class="cta" onclick="calcToday()">今日の数字を見る</button>
+    <div id="today-result" class="result"></div>
+    <div class="note">※気持ちの整理に使ってください</div>
+  </section>
+</main>
+
+<footer>
+  無料の数字メッセージ占い
+</footer>
+
+<script>
+/* ===== タブ切り替え ===== */
+function showTab(id){
+  document.getElementById('month').style.display = (id==='month')?'block':'none';
+  document.getElementById('today').style.display = (id==='today')?'block':'none';
+  document.getElementById('tab-month').classList.toggle('active', id==='month');
+  document.getElementById('tab-today').classList.toggle('active', id==='today');
+}
+
+/* ===== テンプレ格納（あとで100個に増やす） ===== */
+const messages = {
+  month: {
+    1: ["始まりの月。無理に急がず、気持ちを整えることが大切。"],
+    2: ["人との関係がテーマ。一人で抱え込まないで。"],
+    3: ["表現の数字。言葉にすることで流れが変わります。"],
+    4: ["基盤を整える時期。生活リズムを見直して。"],
+    5: ["変化の兆し。違和感は大事なサイン。"],
+    6: ["優しさの数字。自分にも優しくして。"],
+    7: ["内省の月。静かな時間が答えをくれます。"],
+    8: ["現実的な成果の数字。焦らず積み重ねて。"],
+    9: ["区切りの時期。手放していいものがあります。"]
+  },
+  today: {
+    1: ["今日は新しい一歩を意識して。"],
+    2: ["今日は聞く姿勢が運を呼びます。"],
+    3: ["軽い気持ちで動くと◎。"],
+    4: ["丁寧さが鍵になる日。"],
+    5: ["予定変更も悪くない日。"],
+    6: ["感情を大切にして。"],
+    7: ["一人時間がヒントに。"],
+    8: ["現実的な判断が吉。"],
+    9: ["区切りを意識すると楽になります。"]
+  }
+};
+
+/* ===== ロジック ===== */
+function numFromDate(d){
+  const day = new Date(d).getDate();
+  return (day % 9) + 1;
+}
+
+function calcMonth(){
+  const d = document.getElementById('birthday').value;
+  if(!d) return;
+  const n = numFromDate(d);
+  const list = messages.month[n];
+  const msg = list[Math.floor(Math.random()*list.length)];
+  document.getElementById('month-result').innerHTML =
+    `今月の数字は <b>${n}</b> です。<br>${msg}`;
+}
+
+function calcToday(){
+  const n = ((new Date()).getDate() % 9) + 1;
+  const list = messages.today[n];
+  const msg = list[Math.floor(Math.random()*list.length)];
+  document.getElementById('today-result').innerHTML =
+    `今日の数字は <b>${n}</b> です。<br>${msg}`;
+}
+</script>
+
 </body>
 </html>
