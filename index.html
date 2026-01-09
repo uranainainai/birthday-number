@@ -2,117 +2,250 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>【公式】悠久の星読み師｜誕生日から今月の数字メッセージを読む無料占い</title>
+  <title>【公式】悠久の星読み師｜誕生日数字占い</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="誕生日と今月・今日の流れから、恋愛運・金運・人間関係・心の状態を数字で読み解く占いです。悠久の星読み師による無料診断。">
   <style>
-    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;background:#f7f7fb;color:#222;margin:0}
-    header{padding:18px 14px;text-align:center;background:#fff;position:sticky;top:0;border-bottom:1px solid #eee}
-    h1{font-size:17px;margin:0 0 8px}
-    main{max-width:700px;margin:0 auto;padding:16px}
-    .card{background:#fff;border-radius:14px;padding:16px;margin:14px 0;box-shadow:0 8px 20px rgba(0,0,0,.05)}
-    label{font-size:13px;color:#666}
-    input{width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin-top:6px;font-size:16px}
-    button{margin-top:12px;padding:12px;border-radius:12px;border:none;background:#6b5cff;color:#fff;font-size:16px}
-    .section{margin-top:16px}
-    .section h3{margin:0 0 6px;font-size:15px}
-    .note{font-size:13px;color:#666;margin-top:14px}
-    footer{text-align:center;font-size:12px;color:#777;padding:20px}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:#f7f7fb;color:#222;margin:0;line-height:1.6}
+    header{padding:20px;text-align:center;background:#fff;border-bottom:1px solid #eee}
+    h1{font-size:18px;margin:0;color:#444}
+    main{max-width:600px;margin:0 auto;padding:16px}
+    .card{background:#fff;border-radius:16px;padding:20px;margin:10px 0;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+    label{font-size:14px;color:#666;display:block;margin-bottom:8px}
+    input{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;font-size:16px;box-sizing:border-box}
+    button{width:100%;margin-top:16px;padding:14px;border-radius:12px;border:none;background:#6b5cff;color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
+    button:active{background:#5445d6}
+    
+    .result-area{margin-top:24px;display:none}
+    .section{margin-bottom:20px;padding-bottom:15px;border-bottom:1px dashed #eee}
+    .section:last-child{border-bottom:none}
+    .section h3{margin:0 0 8px;font-size:16px;display:flex;align-items:center}
+    .section p{margin:0;font-size:15px;color:#444}
+    .num-badge{background:#6b5cff;color:#fff;padding:2px 8px;border-radius:6px;font-size:13px;margin-left:8px}
+    
+    footer{text-align:center;font-size:12px;color:#888;padding:30px}
   </style>
 </head>
 <body>
 
 <header>
-  <h1>悠久の星読み師の誕生日数字占い｜今月の流れを読む</h1>
+  <h1>悠久の星読み師｜今月の数字メッセージ</h1>
 </header>
 
 <main>
+  <section class="card">
+    <label>あなたの誕生日</label>
+    <input type="date" id="birthday">
+    <button onclick="diagnose()">今月の運勢を読み解く</button>
 
-<section class="card">
-  <label>誕生日を入力してください</label>
-  <input type="date" id="birthday">
-  <button onclick="diagnose()">診断する</button>
-
-  <div id="result"></div>
-
-  <div class="note">
-    ※ この占いは、誕生日・今月・今日の流れを組み合わせて読み解いています。<br>
-    感じたことは、無理に整理せず言葉にして大丈夫です。
-  </div>
-</section>
-
+    <div id="resultArea" class="result-area">
+      <div class="section">
+        <h3>🔮 今月のテーマ <span id="baseNum" class="num-badge"></span></h3>
+        <p id="totalMsg"></p>
+      </div>
+      <div class="section">
+        <h3>❤️ 恋愛運 <span id="loveNum" class="num-badge"></span></h3>
+        <p id="loveMsg"></p>
+      </div>
+      <div class="section">
+        <h3>💰 金運 <span id="moneyNum" class="num-badge"></span></h3>
+        <p id="moneyMsg"></p>
+      </div>
+      <div class="section">
+        <h3>👥 対人関係 <span id="relationNum" class="num-badge"></span></h3>
+        <p id="relationMsg"></p>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>
-  無料の数字メッセージ占い｜悠久の星読み師
+  © 悠久の星読み師｜誕生日無料診断
 </footer>
 
 <script>
-/* ===== 基本関数 ===== */
-function reduceToNine(n){
-  return (n - 1) % 9 + 1;
-}
+/**
+ * メッセージリスト（各30個）
+ * ここに30個ずつ文章を入れてください。
+ */
+const MESSAGES = {
+  total: [
+    "新たな扉が開く予感。これまでの努力が形になり、周囲からも認められる最高の1ヶ月です。",
+    "エネルギーが満ち溢れています。温めていた計画を実行に移すなら、今が絶好のタイミング。",
+    "直感が冴え渡る月。迷ったときは「ワクワクするかどうか」を基準に選んで正解です。",
+    "追い風が吹いています。自分の限界を決めつけず、少し高い目標に挑戦してみましょう。",
+    "思わぬ幸運が舞い込む兆し。棚ぼた的なラッキーも、あなたの徳が積み重なった結果です。",
+    "社交運が活発に。あなたが中心となって動くことで、物事がスムーズに回り始めます。",
+    "クリエイティブな才能が開花します。趣味や副業で自分らしさを表現してみて。",
+    "視界がクリアになり、進むべき道がはっきりと見えてきます。自信を持って前進を。",
+    "リーダーシップを発揮できる月。あなたの言葉が多くの人の心を動かすでしょう。",
+    "自分へのご褒美がさらなる運気を呼びます。少し贅沢な時間を過ごしてリフレッシュを。",
+    "現状維持がキーワード。派手な動きよりも、今あるものを丁寧に育てるのが吉です。",
+    "足元を固める月。基礎的なスキルや習慣を見直すことで、将来の大きな飛躍に繋がります。",
+    "周囲との調和を大切に。一歩引いて全体を眺めることで、新しい気づきが得られます。",
+    "整理整頓が運気を安定させます。部屋の掃除やスマホのデータ整理を優先して。",
+    "学びの時期。専門知識を深めたり、本を読んだりすることで内面が充実します。",
+    "忍耐が必要な場面もありますが、それは成長のための通過点。焦らず構えましょう。",
+    "ルーティンを大切に。規則正しい生活が、精神的な安定と運気の底上げに貢献します。",
+    "懐かしい人からの連絡があるかも。過去の繋がりが今のあなたを助けてくれます。",
+    "静かな時間を過ごすのが吉。瞑想やヨガなど、自分の内面と向き合う時間を作って。",
+    "中庸を保つこと。極端な判断は避け、バランスの良い選択を心がけましょう。",
+    "少し疲れが出やすい時期。無理をせず、睡眠時間を確保してエネルギーを蓄えて。",
+    "想定外の変更が起きやすい月。柔軟な心で「これも経験」と受け流す強さを。",
+    "言葉の行き違いに注意。大切なことは端折らず、丁寧に伝えることを意識して。",
+    "執着を手放すタイミング。握りしめているものを手放すと、新しい何かが入ってきます。",
+    "感情の起伏が激しくなるかも。深呼吸を忘れず、客観的な視点を保つようにして。",
+    "金銭トラブルに注意。安易な貸し借りや、甘い誘惑には乗らないのが賢明です。",
+    "自分を責めすぎないこと。完璧主義を少し緩めて、6割の出来で良しとしましょう。",
+    "今は動くよりも待つとき。時期が来れば自然と動き出すので、焦りは禁物です。",
+    "他人の評価を気にしすぎているかも。自分の本音を大切に、心地よい選択を。",
+    "一区切りの時期。終わらせるべきことに終止符を打ち、次への準備を始めましょう。"
+  ],
+  love: [
+    "理想的な出会いの予感。いつもより少し華やかな装いで出かけると吉です。",
+    "パートナーとの絆が深まる月。将来についての前向きな話し合いができるでしょう。",
+    "あなたの魅力が全開に。自覚がなくても、周囲からの視線が集まりやすい時期です。",
+    "恋のチャンスは身近なところに。意外な人物との共通点が見つかり、急接近しそう。",
+    "素直な自己表現が恋を動かします。駆け引きよりも、ストレートな言葉が有効です。",
+    "告白や提案に最適な時期。誠実な態度は、相手の心を強く揺さぶるはずです。",
+    "過去の恋に対するわだかまりが消え、新しいスタートを切る準備が整います。",
+    "情熱的な展開が期待できそう。直感に従って行動することで、ドラマチックな展開に。",
+    "共通の趣味を通じて縁が広がります。イベントや集まりには積極的に顔を出して。",
+    "癒やしの恋が始まります。一緒にいて「ほっとする」相手を大切にしてください。",
+    "穏やかな愛を育む月。派手な進展はなくても、確かな信頼関係が築かれます。",
+    "聞き役に徹することで、相手の本音を知ることができます。受容の心が鍵です。",
+    "友情が愛情に変わる兆し。気心の知れた相手が、特別な存在に変わるかも。",
+    "自分を愛することが、良い恋愛を引き寄せる第一歩。自己肯定感を高めて。",
+    "パートナーへの感謝を形にしましょう。小さなプレゼントや手紙が喜ばれます。",
+    "焦りは禁物。相手のペースを尊重することで、自然と距離が縮まっていきます。",
+    "今は自分磨きに集中する時期。あなたが輝けば、自然と良い縁が引き寄せられます。",
+    "昔の知人との再会にチャンスあり。同窓会や古い友人との集まりは要チェック。",
+    "落ち着いた大人の恋愛を楽しめる月。精神的な繋がりを重視すると満足度アップ。",
+    "言葉以外のコミュニケーションを大切に。仕草や表情から相手の意図を汲み取って。",
+    "小さな誤解が生まれやすい時期。確認を怠らず、丁寧な対話を心がけましょう。",
+    "嫉妬心や独占欲に注意。相手を束縛するよりも、信頼して自由にさせてあげる勇気を。",
+    "期待しすぎると空回りしがち。見返りを求めない無償の愛が、結果的にあなたを救います。",
+    "秘密の恋にはリスクが伴います。一時の感情に流されず、冷静な判断を。",
+    "マンネリを感じたら、新しいデートスポットを開拓して。環境を変えるのが吉。",
+    "今は結論を急がないこと。グレーな状態も、時間の経過とともに白黒はっきりします。",
+    "SNSでのトラブルに注意。プライベートな情報を出しすぎないよう気を引き締めて。",
+    "優柔不断になりやすい月。誰にでも良い顔をすると、本当に大切な人を傷つけるかも。",
+    "過去の恋に引きずられないで。思い出は箱にしまって、前だけを向きましょう。",
+    "一度リセットが必要なとき。自分にとって本当に幸せな関係とは何か、再考して。"
+  ],
+  money: [
+    "金運急上昇！投資や副業で予想以上の成果が出る可能性が高い月です。",
+    "財布を新調したり、お金に関する勉強を始めると、長期的な豊かさに繋がります。",
+    "欲しかったものが安く手に入るチャンス。情報収集を怠らないようにしましょう。",
+    "仕事での成果が給与やボーナスに反映されやすい時期。正当な評価を勝ち取れます。",
+    "くじ運や勝負運が強い月。自分を信じて、少し大胆な勝負に出るのもあり。",
+    "価値あるものへの投資が吉。安物買いをせず、長く使える上質なものを選んで。",
+    "臨時収入の気配。日頃の頑張りが、思いがけない形で現金化されるでしょう。",
+    "金銭感覚が冴えています。家計の見直しを行うと、驚くほど無駄が見つかります。",
+    "プレゼンや交渉が成功し、大きな契約が取れる兆し。自信を持って臨んで。",
+    "人脈がお金を連れてくる月。会食や交流会への参加は、将来の利益に繋がります。",
+    "安定した金運です。大きな変動はありませんが、着実に貯蓄が増えていくでしょう。",
+    "固定費の見直しに最適な時期。保険やサブスクを整理して、余剰資金を作って。",
+    "少額の積立を始めるのに良いタイミング。塵も積もれば山となるを実感します。",
+    "「生きたお金」を使いましょう。他人のためにお金を使うと、巡り巡って戻ってきます。",
+    "衝動買いを抑えられる月。必要なものだけを厳選して買う、賢い消費ができます。",
+    "コツコツとポイ活や副業に励むのが吉。地道な努力が実を結びやすい時期です。",
+    "お金の神様に好かれる行動を。小銭を大切にしたり、財布を拭いたりしてみて。",
+    "遺産や譲渡など、家族に関するお金の動きがあるかも。冷静に対応を。",
+    "今は守りの時期。投資は控えめにし、現金の比率を高めておくのが安心です。",
+    "身の丈に合った生活を。見栄のためにお金を使うのは、今月は我慢しましょう。",
+    "予定外の出費が増える予感。予備費を多めに確保しておくことが心の安定に。",
+    "貸し借りは厳禁。親しい仲でも、お金が絡むとトラブルの元になります。",
+    "ネットショッピングでの失敗に注意。口コミをよく読み、慎重に判断して。",
+    "怪しい儲け話には乗らないこと。「楽に稼げる」という言葉の裏を疑いましょう。",
+    "カードの使いすぎに注意。支払日に慌てないよう、利用明細はこまめにチェック。",
+    "物の紛失や故障による出費があるかも。身の回りのメンテナンスを徹底して。",
+    "財布の紐が緩みがち。ストレス発散を買い物以外の方法で見つけるのが鍵です。",
+    "今は大きな契約は見送るのが無難。条件を細かく再確認する時間を持ちましょう。",
+    "ギャンブル運は低迷中。一攫千金を狙うよりも、堅実に稼ぐ道を選んでください。",
+    "お金に対するネガティブな思い込みを捨てて。豊かさを受け取る許可を自分に出して。"
+  ],
+  relation: [
+    "人間関係の黄金期。素晴らしい理解者やパートナーとの出会いが期待できます。",
+    "あなたの誠実さが評価され、周囲からの信頼が一気に高まる1ヶ月です。",
+    "チームワークが最高に機能します。協力し合うことで大きな目標を達成できるはず。",
+    "影響力のある人物との縁がつながります。アドバイスを素直に聞き入れるのが吉。",
+    "誤解が解け、疎遠になっていた友人との絆が復活する兆しがあります。",
+    "あなたの笑顔が周囲を明るくします。明るい挨拶一つで、運気がさらに上昇。",
+    "交渉事がスムーズに進む時期。相手のニーズを的確に捉え、Win-Winの関係を。",
+    "新しいコミュニティに飛び込んでみて。そこでの出会いがあなたの人生を変えるかも。",
+    "良き指導者に恵まれる月。素直に教えを請うことで、スキルが飛躍的に向上します。",
+    "褒め上手になることで運気がアップ。他人の良いところを積極的に口に出して。",
+    "聞き役に回ることで、周囲からの人望が厚くなります。共感力を大切に。",
+    "家族との時間が心の充電に。身近な人を大切にすることが、全体の運気を支えます。",
+    "程よい距離感を保てる時期。ベタベタしすぎず、自立した関係を築けるでしょう。",
+    "共通の敵や目標を持つことで、仲間との連帯感が強まります。",
+    "年下の人からの慕われる月。面倒を見てあげることで、あなた自身も学べるはず。",
+    "礼儀正しさが武器になります。マナーを再確認し、丁寧な振る舞いを心がけて。",
+    "SNSでの交流が楽しくなる時期。ポジティブな発信を心がけると吉です。",
+    "縁の下の力持ちとして活躍できそう。あなたのサポートに感謝している人がいます。",
+    "直感で「合う」と思った人を大切に。論理よりもフィーリングを信じて正解です。",
+    "言葉を選んで伝えることで、対立を避けることができます。冷静な対話を。",
+    "他人の言動に振り回されやすい時期。自分は自分、人は人と割り切る強さを。",
+    "お節介に注意。良かれと思ってしたことが、相手には重荷になるかもしれません。",
+    "愚痴や不満の多いグループからは距離を置いて。負のエネルギーを避けるのが賢明。",
+    "秘密の漏洩に注意。噂話には参加せず、口を固く結んでおくのが安全です。",
+    "マウントを取ってくる相手には、笑顔でスルー。同じ土俵に立たないことが勝利です。",
+    "孤独を感じるかもしれませんが、それは内省のための大切な時間。一人の時間を楽しんで。",
+    "自己主張が強くなりすぎているかも。相手の立場に立って考える余裕を持って。",
+    "第一印象で判断しないこと。じっくり話してみると、意外な一面が見えてくるはず。",
+    "八方美人は卒業しましょう。全員に好かれる必要はないと心得て。",
+    "境界線をはっきり引くこと。無理な頼み事は断る勇気が、自分を守ることに繋がります。"
+  ]
+};;
 
-/* ===== 基礎数（誕生日＋今月＋今日） ===== */
-function getBaseNumber(birthday){
-  const b = new Date(birthday);
-  const birthDay = b.getDate();
-  const now = new Date();
-  const month = now.getMonth() + 1;
-  const today = now.getDate();
-  return reduceToNine(birthDay + month + today);
-}
-
-/* ===== 分野ごとの派生数 ===== */
-function getFortuneNumbers(base){
-  return {
-    love: reduceToNine(base + 1),
-    money: reduceToNine(base + 3),
-    relation: reduceToNine(base + 5),
-    mind: reduceToNine(base + 7)
-  };
-}
-
-/* ===== 長文テンプレ（例：1〜3だけ入れてある） ===== */
-const messages = {
-  love: {
-    1: "恋愛面では、気持ちが先走りやすい時期です。相手の反応に一喜一憂しがちですが、今は深追いしない距離感が心を守ります。",
-    2: "相手を思いやる気持ちが強くなりやすい時です。ただし我慢が増えすぎると後で疲れが出るので、本音も大切にしてください。",
-    3: "言葉が感情を左右する時期です。伝え方次第で関係が軽くも重くもなります。無理に盛らず、素直さを意識して。"
-  },
-  money: {
-    1: "金運は始動期にあります。収支の流れを整えることで、後半に余裕が生まれます。衝動買いには一度間を置いて。",
-    2: "お金に対する考え方が揺れやすい時期です。誰かの意見に流されず、自分に合った使い方を選ぶことが安定につながります。",
-    3: "出入りが増えやすい運気です。使うこと自体は悪くありませんが、目的を意識することで後悔を減らせます。"
-  },
-  relation: {
-    1: "人間関係では主導権を握りやすい時です。ただし強く出すぎると距離が生まれます。余白を残す姿勢が大切です。",
-    2: "周囲との調和を求められる場面が増えます。無理に合わせすぎず、自分の立場を静かに示すことが信頼につながります。",
-    3: "会話が増え、人との接点が広がる時期です。浅く広くなりやすいので、疲れを感じたら一人の時間を優先して。"
-  },
-  mind: {
-    1: "心の中で新しい考えが芽生えています。焦って形にしなくても大丈夫です。今は気づきを大切にする時期です。",
-    2: "感情が揺れやすく、他人の言葉が刺さりやすい状態です。距離を取ることは逃げではなく、整えるための選択です。",
-    3: "思考が活発になり、考えすぎる傾向があります。紙に書き出すことで、頭の中が静かになっていきます。"
+/**
+ * 診断ロジック
+ */
+function diagnose() {
+  const bInput = document.getElementById("birthday").value;
+  if (!bInput) {
+    alert("誕生日を入力してください");
+    return;
   }
-};
 
-/* ===== 診断実行 ===== */
-function diagnose(){
-  const birthday = document.getElementById("birthday").value;
-  if(!birthday) return;
+  const birth = new Date(bInput);
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
 
-  const base = getBaseNumber(birthday);
-  const f = getFortuneNumbers(base);
+  // 1. シード値（計算の種）の生成
+  // 誕生日と現在の年月を混ぜる（同じ月内なら結果は固定）
+  const seed = (birth.getDate() * 11) + (birth.getMonth() + 1) + (year * 7) + (month * 13);
 
-  document.getElementById("result").innerHTML = `
-    <div class="section"><h3>🔮 全体の基礎ナンバー</h3><p>今月のあなたの基礎数は <b>${base}</b> です。この数字が全体の流れを示します。</p></div>
+  // 2. インデックスの算出（0〜29）
+  // それぞれ異なる倍数をかけることで、項目ごとに違う結果が出るようにする
+  const totalIdx    = (seed * 3) % 30;
+  const loveIdx     = (seed * 7) % 30;
+  const moneyIdx    = (seed * 13) % 30;
+  const relationIdx = (seed * 17) % 30;
 
-    <div class="section"><h3>❤️ 恋愛運（${f.love}）</h3><p>${messages.love[f.love]}</p></div>
-    <div class="section"><h3>💰 金運（${f.money}）</h3><p>${messages.money[f.money]}</p></div>
-    <div class="section"><h3>👥 人間関係運（${f.relation}）</h3><p>${messages.relation[f.relation]}</p></div>
-    <div class="section"><h3>🧠 心の状態・アドバイス（${f.mind}）</h3><p>${messages.mind[f.mind]}</p></div>
-  `;
+  // 3. 画面への反映
+  // 基礎ナンバーとして1-9を表示（演出用）
+  document.getElementById("baseNum").innerText = "No." + ((seed % 9) + 1);
+  document.getElementById("loveNum").innerText = "No." + ((loveIdx % 9) + 1);
+  document.getElementById("moneyNum").innerText = "No." + ((moneyIdx % 9) + 1);
+  document.getElementById("relationNum").innerText = "No." + ((relationIdx % 9) + 1);
+
+  // 配列から文章を取得（30個に満たない場合は最初の要素を表示するガード付）
+  document.getElementById("totalMsg").innerText    = getMsg(MESSAGES.total, totalIdx);
+  document.getElementById("loveMsg").innerText     = getMsg(MESSAGES.love, loveIdx);
+  document.getElementById("moneyMsg").innerText    = getMsg(MESSAGES.money, moneyIdx);
+  document.getElementById("relationMsg").innerText = getMsg(MESSAGES.relation, relationIdx);
+
+  // 結果表示
+  document.getElementById("resultArea").style.display = "block";
+  window.scrollTo({ top: document.getElementById("resultArea").offsetTop, behavior: 'smooth' });
+}
+
+// 配列の範囲外を防ぎつつメッセージを返す関数
+function getMsg(list, idx) {
+  if (list.length === 0) return "メッセージは準備中です。";
+  return list[idx % list.length];
 }
 </script>
 
