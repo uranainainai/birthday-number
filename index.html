@@ -2,25 +2,36 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>【公式】悠久の星読み師｜誕生日数字占い</title>
+  <title>悠久の星読み師｜誕生日から読み解く運命の数字メッセージ</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
+    :root { --main-color: #6b5cff; }
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:#f7f7fb;color:#222;margin:0;line-height:1.6}
     header{padding:20px;text-align:center;background:#fff;border-bottom:1px solid #eee}
     h1{font-size:18px;margin:0;color:#444}
     main{max-width:600px;margin:0 auto;padding:16px}
+    
+    /* メニュー画面スタイル */
+    #menu-screen { display: block; }
+    .menu-card { background:#fff; border-radius:16px; padding:25px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,.08); cursor:pointer; text-align:center; transition: 0.2s; border: 2px solid transparent; }
+    .menu-card:hover { border-color: var(--main-color); transform: translateY(-2px); }
+    .menu-card h2 { margin: 0 0 8px; font-size: 18px; color: var(--main-color); }
+    .menu-card p { margin: 0; font-size: 13px; color: #666; }
+
+    /* 診断画面スタイル */
+    #diag-screen { display: none; }
     .card{background:#fff;border-radius:16px;padding:20px;margin:10px 0;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+    .back-btn { background:none; border:none; color:var(--main-color); cursor:pointer; font-size:14px; margin-bottom:10px; font-weight:bold; }
     label{font-size:14px;color:#666;display:block;margin-bottom:8px}
     input{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;font-size:16px;box-sizing:border-box}
-    button{width:100%;margin-top:16px;padding:14px;border-radius:12px;border:none;background:#6b5cff;color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
-    button:active{background:#5445d6}
+    .exec-btn{width:100%;margin-top:16px;padding:14px;border-radius:12px;border:none;background:var(--main-color);color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
     
     .result-area{margin-top:24px;display:none}
     .section{margin-bottom:20px;padding-bottom:15px;border-bottom:1px dashed #eee}
     .section:last-child{border-bottom:none}
     .section h3{margin:0 0 8px;font-size:16px;display:flex;align-items:center}
     .section p{margin:0;font-size:15px;color:#444}
-    .num-badge{background:#6b5cff;color:#fff;padding:2px 8px;border-radius:6px;font-size:13px;margin-left:8px}
+    .num-badge{background:var(--main-color);color:#fff;padding:2px 8px;border-radius:6px;font-size:13px;margin-left:8px}
     
     footer{text-align:center;font-size:12px;color:#888;padding:30px}
   </style>
@@ -28,34 +39,49 @@
 <body>
 
 <header>
-  <h1>悠久の星読み師｜今月の数字メッセージ</h1>
+  <h1>悠久の星読み師｜誕生日数字占い</h1>
 </header>
 
 <main>
-  <section class="card">
-    <label>あなたの誕生日</label>
-    <input type="date" id="birthday">
-    <button onclick="diagnose()">今月の運勢を読み解く</button>
-
-    <div id="resultArea" class="result-area">
-      <div class="section">
-        <h3>🔮 今月のテーマ <span id="baseNum" class="num-badge"></span></h3>
-        <p id="totalMsg"></p>
-      </div>
-      <div class="section">
-        <h3>❤️ 恋愛運 <span id="loveNum" class="num-badge"></span></h3>
-        <p id="loveMsg"></p>
-      </div>
-      <div class="section">
-        <h3>💰 金運 <span id="moneyNum" class="num-badge"></span></h3>
-        <p id="moneyMsg"></p>
-      </div>
-      <div class="section">
-        <h3>👥 対人関係 <span id="relationNum" class="num-badge"></span></h3>
-        <p id="relationMsg"></p>
-      </div>
+  <div id="menu-screen">
+    <div class="menu-card" onclick="openDiag('monthly')">
+      <h2>🌙 今月の数字メッセージ</h2>
+      <p>この一ヶ月の大きな運命の流れを読み解きます</p>
     </div>
-  </section>
+    <div class="menu-card" onclick="openDiag('daily')">
+      <h2>☀️ 今日の数字メッセージ</h2>
+      <p>毎日変わる、あなたへの大切な助言</p>
+    </div>
+  </div>
+
+  <div id="diag-screen">
+    <button class="back-btn" onclick="backToMenu()">← メニューへ戻る</button>
+    <section class="card">
+      <h2 id="diag-type-title" style="font-size:17px; margin-bottom:15px;"></h2>
+      <label>あなたの誕生日</label>
+      <input type="date" id="birthday">
+      <button class="exec-btn" onclick="diagnose()">運勢を読み解く</button>
+
+      <div id="resultArea" class="result-area">
+        <div class="section">
+          <h3>🔮 <span id="res-theme-label">今月</span>のテーマ <span id="baseNum" class="num-badge"></span></h3>
+          <p id="totalMsg"></p>
+        </div>
+        <div class="section">
+          <h3>❤️ 恋愛運 <span id="loveNum" class="num-badge"></span></h3>
+          <p id="loveMsg"></p>
+        </div>
+        <div class="section">
+          <h3>💰 金運 <span id="moneyNum" class="num-badge"></span></h3>
+          <p id="moneyMsg"></p>
+        </div>
+        <div class="section">
+          <h3>👥 対人関係 <span id="relationNum" class="num-badge"></span></h3>
+          <p id="relationMsg"></p>
+        </div>
+      </div>
+    </section>
+  </div>
 </main>
 
 <footer>
@@ -63,9 +89,24 @@
 </footer>
 
 <script>
+let mode = 'monthly'; // 'monthly' か 'daily'
+
+function openDiag(selectedMode) {
+  mode = selectedMode;
+  document.getElementById('menu-screen').style.display = 'none';
+  document.getElementById('diag-screen').style.display = 'block';
+  document.getElementById('diag-type-title').innerText = mode === 'monthly' ? '🌙 今月の運勢診断' : '☀️ 今日の運勢診断';
+  document.getElementById('res-theme-label').innerText = mode === 'monthly' ? '今月' : '今日';
+  document.getElementById('resultArea').style.display = 'none';
+}
+
+function backToMenu() {
+  document.getElementById('menu-screen').style.display = 'block';
+  document.getElementById('diag-screen').style.display = 'none';
+}
+
 /**
- * メッセージリスト（各30個）
- * ここに30個ずつ文章を入れてください。
+ * あなたが作成した120件のメッセージ（全保持）
  */
 const MESSAGES = {
   total: [
@@ -128,7 +169,7 @@ const MESSAGES = {
     "マンネリを感じたら、新しいデートスポットを開拓して。環境を変えるのが吉。",
     "今は結論を急がないこと。グレーな状態も、時間の経過とともに白黒はっきりします。",
     "SNSでのトラブルに注意。プライベートな情報を出しすぎないよう気を引き締めて。",
-    "優柔不断になりやすい月。誰にでも良い顔をすると、本当に大切な人を傷つけるかも。",
+    "優憂不断になりやすい月。誰にでも良い顔をすると、本当に大切な人を傷つけるかも。",
     "過去の恋に引きずられないで。思い出は箱にしまって、前だけを向きましょう。",
     "一度リセットが必要なとき。自分にとって本当に幸せな関係とは何か、再考して。"
   ],
@@ -196,7 +237,7 @@ const MESSAGES = {
     "八方美人は卒業しましょう。全員に好かれる必要はないと心得て。",
     "境界線をはっきり引くこと。無理な頼み事は断る勇気が、自分を守ることに繋がります。"
   ]
-};;
+};
 
 /**
  * 診断ロジック
@@ -212,39 +253,41 @@ function diagnose() {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
+  const date = now.getDate();
 
-  // 1. シード値（計算の種）の生成
-  // 誕生日と現在の年月を混ぜる（同じ月内なら結果は固定）
-  const seed = (birth.getDate() * 11) + (birth.getMonth() + 1) + (year * 7) + (month * 13);
+  let seed;
+  if (mode === 'monthly') {
+    // 【今月版】年・月・誕生日で固定
+    seed = (birth.getDate() * 11) + (birth.getMonth() + 1) + (year * 7) + (month * 13);
+  } else {
+    // 【今日版】年・月・日・誕生日で固定
+    seed = (birth.getDate() * 11) + (birth.getMonth() + 1) + (year * 3) + (month * 5) + (date * 17);
+  }
 
-  // 2. インデックスの算出（0〜29）
-  // それぞれ異なる倍数をかけることで、項目ごとに違う結果が出るようにする
+  // インデックス算出
   const totalIdx    = (seed * 3) % 30;
   const loveIdx     = (seed * 7) % 30;
   const moneyIdx    = (seed * 13) % 30;
   const relationIdx = (seed * 17) % 30;
 
-  // 3. 画面への反映
-  // 基礎ナンバーとして1-9を表示（演出用）
+  // 演出用ナンバー
   document.getElementById("baseNum").innerText = "No." + ((seed % 9) + 1);
   document.getElementById("loveNum").innerText = "No." + ((loveIdx % 9) + 1);
   document.getElementById("moneyNum").innerText = "No." + ((moneyIdx % 9) + 1);
   document.getElementById("relationNum").innerText = "No." + ((relationIdx % 9) + 1);
 
-  // 配列から文章を取得（30個に満たない場合は最初の要素を表示するガード付）
+  // メッセージ反映
   document.getElementById("totalMsg").innerText    = getMsg(MESSAGES.total, totalIdx);
   document.getElementById("loveMsg").innerText     = getMsg(MESSAGES.love, loveIdx);
   document.getElementById("moneyMsg").innerText    = getMsg(MESSAGES.money, moneyIdx);
   document.getElementById("relationMsg").innerText = getMsg(MESSAGES.relation, relationIdx);
 
-  // 結果表示
   document.getElementById("resultArea").style.display = "block";
   window.scrollTo({ top: document.getElementById("resultArea").offsetTop, behavior: 'smooth' });
 }
 
-// 配列の範囲外を防ぎつつメッセージを返す関数
 function getMsg(list, idx) {
-  if (list.length === 0) return "メッセージは準備中です。";
+  if (list.length === 0) return "準備中...";
   return list[idx % list.length];
 }
 </script>
